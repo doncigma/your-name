@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "GameState.h"
 
 Game::Game() {
     // Rendering
@@ -10,7 +11,7 @@ Game::Game() {
     this->inputManager = InputManager();
     
     // State
-    // this->state = GameState();
+    this->state = GameState();
     this->running = false;
 }
 Game::~Game() { 

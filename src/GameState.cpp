@@ -5,7 +5,6 @@ GameState::GameState() {
 }
 GameState::~GameState() {}
 
-
 void GameState::changeState(State state) {
     this->currentState = state;
 }

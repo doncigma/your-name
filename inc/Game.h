@@ -1,8 +1,8 @@
 #pragma once
 #include "GameState.h"
-#include "Renderer.h"
 #include "InputManager.h"
 #include "Player.h"
+#include "Renderer.h"
 
 class Game {
 public:
