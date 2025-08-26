@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "GameState.h"
+#include "StateManager.h"
 
 Game::Game() {
     // Rendering
@@ -11,7 +11,7 @@ Game::Game() {
     this->inputManager = InputManager();
     
     // State
-    this->state = GameState();
+    this->stateManager = StateManager();
     this->running = false;
 }
 Game::~Game() { 
@@ -29,14 +29,19 @@ void Game::init() {
 void Game::run() {
     this->running = true;
     SDL_Event event;
-
+    
     while (this->running) {
-        this->inputManager.processInput(event);
+        // Process discrete events (quit, single presses, etc.)
+        while (SDL_PollEvent(&event)) {
+            this->inputManager.handleEvent(event);
+        }
 
-        // this->player.handleInput(this->inputManager);
+        // Handle continuous input states (movement, key holds, etc.)
+        this->player.handleInput(&this->inputManager);
+
+        this->update();
+        this->render();
     }
-    this->update();
-    this->render();
 }
 
 void Game::quit() {

@@ -18,26 +18,27 @@ include_directories(inc)
 set(SOURCES
     src/main.cpp
     src/Game.cpp
-    src/Entity.cpp
-    src/Player.cpp
-    src/Renderer.cpp
-    src/InputManager.cpp
+    src/GameState.cpp
     src/MenuState.cpp
     src/PlayState.cpp
     src/PauseState.cpp
+    src/Renderer.cpp
+    src/InputManager.cpp
+    src/Entity.cpp
+    src/Player.cpp
 )
 
 # Header files
 set(HEADERS
     inc/Game.h
     inc/GameState.h
-    inc/Entity.h
-    inc/Player.h
-    inc/Renderer.h
-    inc/InputManager.h
     inc/MenuState.h
     inc/PlayState.h
     inc/PauseState.h
+    inc/Renderer.h
+    inc/InputManager.h
+    inc/Entity.h
+    inc/Player.h
 )
 
 # Create executable

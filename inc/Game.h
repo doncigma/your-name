@@ -1,8 +1,16 @@
 #pragma once
-#include "GameState.h"
+#include "StateManager.h"
+#include "Renderer.h"
 #include "InputManager.h"
 #include "Player.h"
-#include "Renderer.h"
+
+enum class GameEvent {
+    DEBUG_ON,
+    DEBUG_OFF,
+    QUIT_REQUESTED,
+    PAUSE_REQUESTED,
+    RESUME_REQUESTED
+};
 
 class Game {
 public:
@@ -13,6 +21,15 @@ public:
     void init();
     void run();
     void quit();
+
+    void handleGameEvent(GameEvent event) {
+        if (event == GameEvent::QUIT_REQUESTED) {
+            this->running = false;
+        }
+        else if (event == GameEvent::PAUSE_REQUESTED) {
+            this->stateManager.changeState(GameState::PAUSE_MENU);
+        }
+    }
 
 private:
     // Rendering
@@ -27,6 +44,6 @@ private:
     Player player;
 
     // State
-    GameState state;
+    StateManager stateManager;
     bool running;
 };
