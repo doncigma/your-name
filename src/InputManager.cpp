@@ -1,19 +1,6 @@
+#include "GameEvent.h"
 #include "InputManager.h"
 #include "Logger.h"
-
-InputManager::InputManager() {
-    mappings[SDL_SCANCODE_F1] = Actions::DEBUG_TOGGLE; // DEV
-    mappings[SDL_SCANCODE_ESCAPE] = Actions::QUIT; // DEV
-    mappings[SDL_SCANCODE_P] = Actions::PAUSE; // will be ESC
-    mappings[SDL_SCANCODE_A] = Actions::MOVE_LEFT;
-    mappings[SDL_SCANCODE_LEFT] = Actions::MOVE_LEFT;
-    mappings[SDL_SCANCODE_D] = Actions::MOVE_RIGHT;
-    mappings[SDL_SCANCODE_RIGHT] = Actions::MOVE_RIGHT;
-    mappings[SDL_SCANCODE_SPACE] = Actions::JUMP;
-    mappings[SDL_SCANCODE_UP] = Actions::JUMP;
-    mappings[SDL_SCANCODE_K] = Actions::ATTACK; // will be right click
-}
-InputManager::~InputManager() {}
 
 void InputManager::handleEvent(SDL_Event& event) {
     auto type = event.type;
@@ -28,28 +15,29 @@ void InputManager::handleEvent(SDL_Event& event) {
 
         // Handle the action
         Actions action = it->second;
+        Logger::log("InputManager::handleEvent(): Action triggered: " + std::to_string(static_cast<int>(action)));
         if (action == Actions::DEBUG_TOGGLE) {
-            if (this->heldKeys[action])
-                this->fireEvent(GameEvent::DEBUG_OFF);
-            else this->fireEvent(GameEvent::DEBUG_ON);
+            this->toggleKeyHeld(action);
+            this->fireEvent(GameEvent::DEBUG_REQUESTED);
         }
         else if (action == Actions::QUIT) {
             this->fireEvent(GameEvent::QUIT_REQUESTED);
         }
         else if (action == Actions::PAUSE) {
+            this->toggleKeyHeld(action);
             this->fireEvent(GameEvent::PAUSE_REQUESTED);
         }
         else if (action == Actions::MOVE_LEFT) {
-            // update key state
+            this->toggleKeyHeld(action);
         }
         else if (action == Actions::MOVE_RIGHT) {
-            // update key state
+            this->toggleKeyHeld(action);
         }
         else if (action == Actions::JUMP) {
-            // update key state
+            this->toggleKeyHeld(action);
         }
         else if (action == Actions::ATTACK) {
-            // update key state
+            this->toggleKeyHeld(action);
         }
     }
     else if (type == SDL_MOUSEBUTTONDOWN) {

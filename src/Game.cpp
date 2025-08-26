@@ -1,4 +1,6 @@
 #include "Game.h"
+#include "GameEvent.h"
+#include "InputManager.h"
 #include "StateManager.h"
 
 Game::Game() {
@@ -9,7 +11,11 @@ Game::Game() {
     // Components
     this->player = Player();
     this->inputManager = InputManager();
-    
+
+    this->inputManager.setEventHandler([this](GameEvent event) {
+        this->handleGameEvent(event);
+    });
+
     // State
     this->stateManager = StateManager();
     this->running = false;
@@ -47,6 +53,18 @@ void Game::run() {
 void Game::quit() {
     SDL_DestroyWindow(this->window);
     SDL_Quit();
+}
+
+void Game::handleGameEvent(GameEvent& event) {
+    if (event == GameEvent::QUIT_REQUESTED) {
+        this->running = false;
+    }
+    else if (event == GameEvent::PAUSE_REQUESTED || event == GameEvent::RESUME_REQUESTED) {
+        this->stateManager.togglePause();
+    }
+    else if (event == GameEvent::DEBUG_REQUESTED) {
+        this->stateManager.toggleDebug();
+    }
 }
 
 // Rendering
