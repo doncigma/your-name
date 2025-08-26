@@ -1,50 +1,58 @@
+#include "GameEvent.h"
 #include "InputManager.h"
+#include "Logger.h"
 
-InputManager::InputManager() {
-    mappings[SDL_SCANCODE_F1] = Actions::DEBUG_TOGGLE; // DEV
-    mappings[SDL_SCANCODE_ESCAPE] = Actions::QUIT; // DEV
-    mappings[SDL_SCANCODE_P] = Actions::PAUSE; // will be ESC
-    mappings[SDL_SCANCODE_A] = Actions::MOVE_LEFT;
-    mappings[SDL_SCANCODE_LEFT] = Actions::MOVE_LEFT;
-    mappings[SDL_SCANCODE_D] = Actions::MOVE_RIGHT;
-    mappings[SDL_SCANCODE_RIGHT] = Actions::MOVE_RIGHT;
-    mappings[SDL_SCANCODE_SPACE] = Actions::JUMP;
-    mappings[SDL_SCANCODE_UP] = Actions::JUMP;
-    mappings[SDL_SCANCODE_K] = Actions::ATTACK; // will be right click
-}
-InputManager::~InputManager() {}
-
-void InputManager::processInput(SDL_Event& event) {
-    if (event.type == SDL_KEYDOWN) {
+void InputManager::handleEvent(SDL_Event& event) {
+    auto type = event.type;
+    if (type == SDL_QUIT) {
+        // Handle quit event
+        this->heldKeys[Actions::QUIT] = true;
+        this->fireEvent(GameEvent::QUIT_REQUESTED);
+    }
+    else if (type == SDL_KEYDOWN) {
         auto it = mappings.find(event.key.keysym.scancode);
-        if (it != mappings.end()) return;
+        if (it == mappings.end()) return;
 
         // Handle the action
         Actions action = it->second;
-        if (action == Actions::QUIT) {
-            // Example: set a flag to quit the game
-            SDL_Event event;
-            event.type = SDL_QUIT;
-            SDL_PushEvent(&event);
+        Logger::log("InputManager::handleEvent(): Action triggered: " + std::to_string(static_cast<int>(action)));
+        if (action == Actions::DEBUG_TOGGLE) {
+            this->toggleKeyHeld(action);
+            this->fireEvent(GameEvent::DEBUG_REQUESTED);
+        }
+        else if (action == Actions::QUIT) {
+            this->fireEvent(GameEvent::QUIT_REQUESTED);
         }
         else if (action == Actions::PAUSE) {
-            // toggle pause state
+            this->toggleKeyHeld(action);
+            this->fireEvent(GameEvent::PAUSE_REQUESTED);
         }
         else if (action == Actions::MOVE_LEFT) {
-            // move player left
+            this->toggleKeyHeld(action);
         }
         else if (action == Actions::MOVE_RIGHT) {
-            // move player right
+            this->toggleKeyHeld(action);
         }
         else if (action == Actions::JUMP) {
-            // make player jump
+            this->toggleKeyHeld(action);
         }
         else if (action == Actions::ATTACK) {
-            // make player attack
-        }
-        else if (action == Actions::DEBUG_TOGGLE) {
-            // toggle debug mode
+            this->toggleKeyHeld(action);
         }
     }
-    
+    else if (type == SDL_MOUSEBUTTONDOWN) {
+        Uint8 button = event.button.button;
+        if (button == SDL_BUTTON_LEFT) {
+            // Handle left mouse button click
+        }
+        else if (button == SDL_BUTTON_RIGHT) {
+            // Handle right mouse button click
+        }
+    }
+}
+
+bool InputManager::isKeyHeld(Actions action) const {
+    auto it = heldKeys.find(action);
+    if (it == heldKeys.end()) return false;
+    return it->second;
 }

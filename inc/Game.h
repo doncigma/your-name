@@ -1,8 +1,9 @@
 #pragma once
-#include "GameState.h"
-#include "Renderer.h"
+#include "GameEvent.h"
 #include "InputManager.h"
 #include "Player.h"
+#include "Renderer.h"
+#include "StateManager.h"
 
 class Game {
 public:
@@ -13,6 +14,9 @@ public:
     void init();
     void run();
     void quit();
+
+    // Event handling
+    void handleGameEvent(GameEvent& event);
 
 private:
     // Rendering
@@ -27,6 +31,6 @@ private:
     Player player;
 
     // State
-    GameState state;
+    StateManager stateManager;
     bool running;
 };

@@ -6,5 +6,5 @@ public:
     Player();
     ~Player();
 
-    void handleInput(const InputManager inputManager);
+    void handleInput(const InputManager* inputManager);
 };

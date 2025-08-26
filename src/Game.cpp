@@ -1,4 +1,7 @@
 #include "Game.h"
+#include "GameEvent.h"
+#include "InputManager.h"
+#include "StateManager.h"
 
 Game::Game() {
     // Rendering
@@ -8,9 +11,13 @@ Game::Game() {
     // Components
     this->player = Player();
     this->inputManager = InputManager();
-    
+
+    this->inputManager.setEventHandler([this](GameEvent event) {
+        this->handleGameEvent(event);
+    });
+
     // State
-    // this->state = GameState();
+    this->stateManager = StateManager();
     this->running = false;
 }
 Game::~Game() { 
@@ -28,19 +35,36 @@ void Game::init() {
 void Game::run() {
     this->running = true;
     SDL_Event event;
-
+    
     while (this->running) {
-        this->inputManager.processInput(event);
+        // Process discrete events (quit, single presses, etc.)
+        while (SDL_PollEvent(&event)) {
+            this->inputManager.handleEvent(event);
+        }
 
-        // this->player.handleInput(this->inputManager);
+        // Handle continuous input states (movement, key holds, etc.)
+        this->player.handleInput(&this->inputManager);
+
+        this->update();
+        this->render();
     }
-    this->update();
-    this->render();
 }
 
 void Game::quit() {
     SDL_DestroyWindow(this->window);
     SDL_Quit();
+}
+
+void Game::handleGameEvent(GameEvent& event) {
+    if (event == GameEvent::QUIT_REQUESTED) {
+        this->running = false;
+    }
+    else if (event == GameEvent::PAUSE_REQUESTED || event == GameEvent::RESUME_REQUESTED) {
+        this->stateManager.togglePause();
+    }
+    else if (event == GameEvent::DEBUG_REQUESTED) {
+        this->stateManager.toggleDebug();
+    }
 }
 
 // Rendering
