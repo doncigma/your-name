@@ -11,6 +11,9 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
+# Find or fetch nlohmann/json
+find_package(nlohmann_json REQUIRED)
+
 # Include directories
 include_directories(inc)
 
@@ -19,6 +22,7 @@ set(SOURCES
     src/Entity.cpp
     src/Game.cpp
     src/InputManager.cpp
+    src/LevelManager.cpp
     src/main.cpp
     src/Player.cpp
     src/Renderer.cpp
@@ -31,6 +35,7 @@ set(HEADERS
     inc/Game.h
     inc/GameEvent.h
     inc/InputManager.h
+    inc/LevelManager.h
     inc/Player.h
     inc/Renderer.h
     inc/StateManager.h
@@ -39,13 +44,14 @@ set(HEADERS
 # Create executable
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-# Link SDL2 libraries
+# Link libraries
 target_link_libraries(${PROJECT_NAME} 
     SDL2::SDL2 
     SDL2::SDL2main
     SDL2_image::SDL2_image
     SDL2_mixer::SDL2_mixer
     SDL2_ttf::SDL2_ttf
+    nlohmann_json::nlohmann_json
 )
 
 # Compiler options
@@ -55,12 +61,30 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
-# Copy assets to build directory (if you create an assets folder)
-# if(EXISTS ${CMAKE_SOURCE_DIR}/assets)
-#     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
-# endif()
+# Copy levels to build directory
+add_custom_target(copy_levels ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/levels
+    ${CMAKE_BINARY_DIR}/levels
+    COMMENT "Copying levels to build directory"
+)
+
+# Make sure levels are copied before building executable
+add_dependencies(${PROJECT_NAME} copy_levels)
+
+# Copy other assets if they exist
+if(EXISTS ${CMAKE_SOURCE_DIR}/assets)
+    add_custom_target(copy_assets ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets
+        ${CMAKE_BINARY_DIR}/assets
+        COMMENT "Copying assets to build directory"
+    )
+    add_dependencies(${PROJECT_NAME} copy_assets)
+endif()
 
 # Print build info
 message(STATUS "Building ${PROJECT_NAME} v${PROJECT_VERSION}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "Assets will be copied to build directory")

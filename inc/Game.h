@@ -18,9 +18,8 @@ public:
     // Event handling
     void handleGameEvent(GameEvent& event);
 
-private:
+private: 
     // Rendering
-    void update();
     void render();
 
     Renderer* renderer;
@@ -33,4 +32,9 @@ private:
     // State
     StateManager stateManager;
     bool running;
+    float delta;
+    Uint32 lastFrameTime;
+
+    void processInput();
+    void update(float delta);
 };

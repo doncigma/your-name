@@ -1,0 +1,12 @@
+{
+  "name": "Start",
+  "objects": [
+    {
+      "type": "platform",
+      "x": 400,
+      "y": 300,
+      "width": 200,
+      "height": 20
+    }
+  ]
+}

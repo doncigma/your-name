@@ -10,8 +10,8 @@ Game::Game() {
     
     // Components
     this->player = Player();
+    
     this->inputManager = InputManager();
-
     this->inputManager.setEventHandler([this](GameEvent event) {
         this->handleGameEvent(event);
     });
@@ -34,18 +34,21 @@ void Game::init() {
 
 void Game::run() {
     this->running = true;
-    SDL_Event event;
+    this->lastFrameTime = SDL_GetTicks();
     
     while (this->running) {
-        // Process discrete events (quit, single presses, etc.)
-        while (SDL_PollEvent(&event)) {
-            this->inputManager.handleEvent(event);
-        }
+        // Timing
+        Uint32 currentTime = SDL_GetTicks();
+        this->delta = (currentTime - this->lastFrameTime) / 1000.0f;
+        this->lastFrameTime = currentTime;
 
-        // Handle continuous input states (movement, key holds, etc.)
-        this->player.handleInput(&this->inputManager);
+        // Process input
+        this->processInput();
 
-        this->update();
+        // Update states
+        this->update(this->delta);
+
+        // Render updates
         this->render();
     }
 }
@@ -55,6 +58,7 @@ void Game::quit() {
     SDL_Quit();
 }
 
+// Game state
 void Game::handleGameEvent(GameEvent& event) {
     if (event == GameEvent::QUIT_REQUESTED) {
         this->running = false;
@@ -67,12 +71,21 @@ void Game::handleGameEvent(GameEvent& event) {
     }
 }
 
-// Rendering
-void Game::update() {
-    // Update game state
+// Process discrete events (quit, single presses, etc.)
+void Game::processInput() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        this->inputManager.handleEvent(event);
+    }
 }
 
+void Game::update(float delta) {
+    this->player.update(delta, &this->inputManager);
+}
+
+// Rendering
 void Game::render() {
     this->renderer->clear();
+    this->renderer->draw();
     this->renderer->present();
 }

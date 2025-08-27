@@ -4,7 +4,7 @@
 Player::Player() {}
 Player::~Player() {}
 
-void Player::handleInput(const InputManager* inputManager) {
+void Player::update(float delta, const InputManager* inputManager) {
     // Handle player input based on the current input manager state
     if (inputManager->isKeyHeld(Actions::MOVE_LEFT)) {
         // Move left

@@ -1,12 +1,13 @@
 #include "Renderer.h"
 
-Renderer::Renderer(SDL_Window* window) { 
-    this->rendrr = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); 
+void Renderer::clear() {
+    if (!(SDL_RenderClear(this->rendrr)))
+        Logger::logerr("Failed to clear renderer: " + std::string(SDL_GetError()));
 }
-Renderer::~Renderer() { SDL_DestroyRenderer(this->rendrr); }
 
-void Renderer::clear() { 
-    SDL_RenderClear(this->rendrr); 
+void Renderer::draw() {
+    SDL_SetRenderDrawColor(this->rendrr, 255, 255, 255, 255);
+    SDL_RenderDrawPoint(this->rendrr, 100, 100);
 }
 
 void Renderer::present() { 
