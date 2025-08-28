@@ -1,31 +1,22 @@
-#include "LevelManager.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <deque>
+#include "LevelManager.h"
 #include "Logger.h"
 
 LevelManager::LevelManager() {
-    this->currentLevelName = "Start";
-    this->loadedLevels = std::vector<Level>();
-}
-
-LevelManager::LevelManager(std::string levelName) {
-    this->currentLevelName = levelName;
-    this->loadedLevels = std::vector<Level>();
+    this->currentLevelName = "start";
+    this->loadedLevels = std::deque<Level>();
+    this->loadLevel(this->currentLevelName);
 }
 
 LevelManager::~LevelManager() {
-    this->loadedLevels.clear();
+    this->loadedLevels.~deque();
 }
 
-/// @brief Loads the current level
-/// @return The loaded Level object
-inline Level LevelManager::loadLevel() {
-    return (this->currentLevelData = this->loadLevel(this->currentLevelName));
+void LevelManager::init() {
 }
 
-/// @brief Loads a level from a JSON file
-/// @param levelName The name of the level to load
-/// @return The loaded Level object
 Level LevelManager::loadLevel(const std::string& levelName) {
     std::string levelPath = "levels/" + levelName + ".json";
 
@@ -52,12 +43,13 @@ Level LevelManager::loadLevel(const std::string& levelName) {
 
     Level level = Level(levelName, levelPath, objects);
     this->loadedLevels.push_back(level);
+    this->currentLevelData = level;
     return level;
 }
 
 void LevelManager::unloadLevel() {
     if (!loadedLevels.empty())
-        loadedLevels.pop_back();
+        loadedLevels.pop_front();
     else Logger::log("LevelManager::unloadLevel(): No levels are currently loaded.");
 }
 
@@ -67,7 +59,7 @@ void LevelManager::unloadLevel(const std::string& levelName) {
         loadedLevels.end(),
         [&levelName](const Level& lvl) { return lvl.getName() == levelName; }
     );
-        
+
     if (it != loadedLevels.end())
         loadedLevels.erase(it);
     else Logger::log("LevelManager::unloadLevel(const std::string&): Level not found: " + levelName);
