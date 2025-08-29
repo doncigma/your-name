@@ -1,6 +1,8 @@
 #pragma once
+#include "AssetManager.h"
 #include "GameEvent.h"
 #include "InputManager.h"
+#include "LevelManager.h"
 #include "Player.h"
 #include "Renderer.h"
 #include "StateManager.h"
@@ -20,13 +22,18 @@ public:
 
 private: 
     // Rendering
-    void render();
-
     Renderer* renderer;
     SDL_Window* window;
-    
+    SDL_Rect camera;
+
+    void resizeWindow(const SDL_WindowEvent& event);
+    void resizeCamera();
+    void render();
+
     // Game components
+    AssetManager assetManager;
     InputManager inputManager;
+    LevelManager levelManager;
     Player player;
 
     // State

@@ -4,20 +4,20 @@
 
 class Renderer {
 public:
-    Renderer(SDL_Window* window);
+    Renderer(SDL_Window* window, SDL_Rect viewport);
     ~Renderer();
 
-    // Render config
-    inline SDL_Color getDrawColor();
-    inline void setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-    
-    // Rendering
-    inline SDL_Renderer* getraw() { return this->rendrr; }
+    // Render state
+    inline SDL_Rect getViewport() { return this->viewport; };
+    void update();
 
-    void clear();
-    void draw();
-    void present();
+    // Rendering
+
+    inline void clear();
+    inline void draw(SDL_Texture* texture, SDL_Rect& camera);
+    inline void present();
 
 private:
     SDL_Renderer* rendrr;
+    SDL_Rect viewport;
 };

@@ -10,19 +10,17 @@ public:
     ~LevelManager();
 
     void init();
+    
+    /// @brief Loads a level from a JSON file
+    /// @param levelName The name of the level to load
+    /// @return The loaded Level object
     Level loadNextLevel();
     
-private:
+    private:
     std::string pathToLevels;
     std::string currentLevelName;
     Level currentLevelData;
     std::deque<Level> loadedLevels;
-
-    /// @brief Loads a level from a JSON file
-    /// @param levelName The name of the level to load
-    /// @return The loaded Level object
-    Level loadLevel(const std::string& levelName);
-
-    void unloadLevel();
-    void unloadLevel(const std::string& levelName);
+    
+    void unloadPrevLevel();
 };

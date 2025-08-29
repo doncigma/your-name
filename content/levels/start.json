@@ -2,7 +2,7 @@
   "name": "start",
   "objects": [
     {
-      "type": "platform",
+      "type": "solid",
       "x": 400,
       "y": 300,
       "width": 200,

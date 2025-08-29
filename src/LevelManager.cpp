@@ -14,11 +14,11 @@ LevelManager::~LevelManager() {
     this->loadedLevels.~deque();
 }
 
-void LevelManager::init() {
-}
+Level LevelManager::loadNextLevel() {
+    this->unloadPrevLevel();
 
-Level LevelManager::loadLevel(const std::string& levelName) {
-    std::string levelPath = "levels/" + levelName + ".json";
+    this->currentLevelName = this->loadedLevels.back().getName();
+    std::string levelPath = "levels/" + this->currentLevelName + ".json";
 
     std::ifstream file = std::ifstream(levelPath);
     if (!file || !file.is_open()) {
@@ -47,20 +47,8 @@ Level LevelManager::loadLevel(const std::string& levelName) {
     return level;
 }
 
-void LevelManager::unloadLevel() {
+void LevelManager::unloadPrevLevel() {
     if (!loadedLevels.empty())
         loadedLevels.pop_front();
     else Logger::log("LevelManager::unloadLevel(): No levels are currently loaded.");
-}
-
-void LevelManager::unloadLevel(const std::string& levelName) {
-    auto it = std::find_if(
-        loadedLevels.begin(),
-        loadedLevels.end(),
-        [&levelName](const Level& lvl) { return lvl.getName() == levelName; }
-    );
-
-    if (it != loadedLevels.end())
-        loadedLevels.erase(it);
-    else Logger::log("LevelManager::unloadLevel(const std::string&): Level not found: " + levelName);
 }

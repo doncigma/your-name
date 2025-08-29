@@ -1,3 +1,4 @@
+#include "AssetManager.h"
 #include "Game.h"
 #include "GameEvent.h"
 #include "InputManager.h"
@@ -9,12 +10,13 @@ Game::Game() {
     this->window = nullptr;
     
     // Components
-    this->player = Player();
-    
+    this->assetManager = AssetManager();
     this->inputManager = InputManager();
     this->inputManager.setEventHandler([this](GameEvent event) {
         this->handleGameEvent(event);
     });
+    this->levelManager = LevelManager();
+    this->player = Player();
 
     // State
     this->stateManager = StateManager();
@@ -28,8 +30,15 @@ Game::~Game() {
 // Global controls
 void Game::init() {
     SDL_Init(SDL_INIT_VIDEO);
+
     this->window = SDL_CreateWindow("Your Name", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
-    this->renderer = new Renderer(this->window);
+    if (!this->window) {
+        Logger::logerr("Failed to create window: " + std::string(SDL_GetError()));
+        return;
+    }
+    SDL_Rect view = this->renderer->getViewport();
+    this->camera = {player.pos.x - view.w / 2, player.pos.y - view.h / 2, view.w, view.h};
+    this->renderer = new Renderer(this->window, view);
 }
 
 void Game::run() {
@@ -60,14 +69,17 @@ void Game::quit() {
 
 // Game state
 void Game::handleGameEvent(GameEvent& event) {
-    if (event == GameEvent::QUIT_REQUESTED) {
+    if (event.type == GameEventType::QUIT_REQUESTED) {
         this->running = false;
     }
-    else if (event == GameEvent::PAUSE_REQUESTED || event == GameEvent::RESUME_REQUESTED) {
+    else if (event.type == GameEventType::PAUSE_REQUESTED || event.type == GameEventType::RESUME_REQUESTED) {
         this->stateManager.togglePause();
     }
-    else if (event == GameEvent::DEBUG_REQUESTED) {
+    else if (event.type == GameEventType::DEBUG_REQUESTED) {
         this->stateManager.toggleDebug();
+    }
+    else if (event.type == GameEventType::WINDOW_RESIZED) {
+        this->resizeWindow(event.sdlEvent.window);
     }
 }
 
@@ -81,11 +93,31 @@ void Game::processInput() {
 
 void Game::update(float delta) {
     this->player.update(delta, &this->inputManager);
+    this->renderer->update();
+    this->resizeCamera();
+}
+
+void Game::resizeWindow(const SDL_WindowEvent& event) {
+    SDL_SetWindowSize(this->window, event.data1, event.data2);
+
+    this->renderer->update();
+    this->resizeCamera();
+}
+
+void Game::resizeCamera() {
+    SDL_Rect view = this->renderer->getViewport();
+    this->camera = {
+        player.pos.x - view.w / 2,
+        player.pos.y - view.h / 2,
+        view.w,
+        view.h
+    };
 }
 
 // Rendering
 void Game::render() {
     this->renderer->clear();
-    this->renderer->draw();
+    // this->assetManager.getTexture(path);
+    // this->renderer->draw(, this->camera);
     this->renderer->present();
 }
