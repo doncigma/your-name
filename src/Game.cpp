@@ -117,7 +117,9 @@ void Game::resizeCamera() {
 // Rendering
 void Game::render() {
     this->renderer->clear();
-    // this->assetManager.getTexture(path);
-    // this->renderer->draw(, this->camera);
+
+    Map map = this->levelManager.loadNextMap();
+    this->renderer->renderTilemap(map, this->camera);
+
     this->renderer->present();
 }

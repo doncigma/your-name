@@ -1,26 +1,20 @@
 #pragma once
 #include <nlohmann/json.hpp>
-#include <deque>
 #include <string>
-#include "Level.h"
+#include <unordered_map>
+#include "Tilemap.h"
 
 class LevelManager {
 public:
     LevelManager();
     ~LevelManager();
 
-    void init();
+    void createLevels();
     
-    /// @brief Loads a level from a JSON file
-    /// @param levelName The name of the level to load
-    /// @return The loaded Level object
-    Level loadNextLevel();
+    Map getMap();
     
-    private:
-    std::string pathToLevels;
-    std::string currentLevelName;
-    Level currentLevelData;
-    std::deque<Level> loadedLevels;
+private:
+    std::unordered_map<std::string, Map> loadedLevels;
     
-    void unloadPrevLevel();
+    Map createCastleLevel();
 };
