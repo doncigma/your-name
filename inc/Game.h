@@ -2,7 +2,7 @@
 #include "AssetManager.h"
 #include "GameEvent.h"
 #include "InputManager.h"
-#include "LevelManager.h"
+// #include "LevelManager.h"
 #include "Player.h"
 #include "Renderer.h"
 #include "StateManager.h"
@@ -33,7 +33,7 @@ private:
     // Game components
     AssetManager assetManager;
     InputManager inputManager;
-    LevelManager levelManager;
+    // LevelManager levelManager;
     Player player;
 
     // State

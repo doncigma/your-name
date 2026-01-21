@@ -1,5 +1,4 @@
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <unordered_map>
 #include "LevelManager.h"
 #include "Logger.h"
@@ -18,7 +17,7 @@ void LevelManager::createLevels() {
 
 Map LevelManager::createCastleLevel() {
     return Map {
-        .tiles = {
+        tiles = {
             T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::WALL, T::WALL,
             T::WALL, T::WALL, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::WALL, T::WALL,
             T::WALL, T::WALL, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::AIR, T::WALL, T::WALL,

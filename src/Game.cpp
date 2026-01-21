@@ -3,6 +3,7 @@
 #include "GameEvent.h"
 #include "InputManager.h"
 #include "StateManager.h"
+#include "Tilemap.h"
 
 Game::Game() {
     // Rendering
@@ -15,7 +16,7 @@ Game::Game() {
     this->inputManager.setEventHandler([this](GameEvent event) {
         this->handleGameEvent(event);
     });
-    this->levelManager = LevelManager();
+    // this->levelManager = LevelManager();
     this->player = Player();
 
     // State
@@ -118,7 +119,7 @@ void Game::resizeCamera() {
 void Game::render() {
     this->renderer->clear();
 
-    Map map = this->levelManager.getMap();
+    Map map;
     this->renderer->draw(map.tileset, this->camera);
 
     this->renderer->present();
