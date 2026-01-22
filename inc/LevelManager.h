@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include "Tilemap.h"
+#include "Level.h"
 
 class LevelManager {
 public:
@@ -10,10 +10,11 @@ public:
 
     void createLevels();
     
-    Map getMap();
+    Level loadPreviousLevel();
+    Level loadNextLevel();
     
 private:
-    std::unordered_map<std::string, Map> loadedLevels;
+    std::unordered_map<std::string, Level> loadedLevels;
     
-    Map createCastleLevel();
+    Level createCastleLevel();
 };

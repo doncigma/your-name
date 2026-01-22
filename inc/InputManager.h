@@ -34,18 +34,29 @@ public:
     };
 
     // Key state
-    inline bool isKeyHeld(Actions action) const;
+    inline bool isKeyHeld(Actions action) const {
+        auto it = heldKeys.find(action);
+        return (it == heldKeys.end() ? false : it->second);
+    }
     
     // Event handling
     void handleEvent(SDL_Event& event);
-    inline void setEventHandler(std::function<void(GameEvent)> handler) { this->eventHandler = handler; }
+    inline void setEventHandler(std::function<void(GameEvent)> handler) {
+        eventHandler = handler; 
+    }
     
 private:
     // Key state
     std::unordered_map<Actions, bool> heldKeys;
-    inline bool toggleKeyHeld(Actions action) { return (this->heldKeys[action] = !this->heldKeys[action]); }
+    inline bool toggleKeyHeld(Actions action) {
+        return (heldKeys[action] = !heldKeys[action]);
+    }
 
     // Event handling
     std::function<void(GameEvent)> eventHandler;
-    inline void fireEvent(GameEvent event);
+    inline void fireEvent(GameEvent event) {
+        eventHandler
+        ? eventHandler(event)
+        : Logger::logerr("InputManager::fire(): No event handler set");
+    }
 };

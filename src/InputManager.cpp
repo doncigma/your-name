@@ -61,14 +61,3 @@ void InputManager::handleEvent(SDL_Event& event) {
         }
     }
 }
-
-inline bool InputManager::isKeyHeld(Actions action) const {
-    auto it = heldKeys.find(action);
-    return (it == heldKeys.end() ? false : it->second);
-}
-
-inline void InputManager::fireEvent(GameEvent event) {
-    this->eventHandler
-        ? this->eventHandler(event)
-        : Logger::logerr("InputManager::fire(): No event handler set");
-}
