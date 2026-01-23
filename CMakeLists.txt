@@ -19,14 +19,7 @@ include_directories(inc)
 
 # Source files
 set(SOURCES
-    src/Entity.cpp
-    src/Game.cpp
-    src/InputManager.cpp
-    src/LevelManager.cpp
     src/main.cpp
-    src/Player.cpp
-    src/Renderer.cpp
-    src/StateManager.cpp
 )
 
 # Header files
@@ -39,6 +32,8 @@ set(HEADERS
     inc/Player.h
     inc/Renderer.h
     inc/StateManager.h
+    inc/Logger.h
+    inc/AssetManager.h
 )
 
 # Create executable
@@ -64,8 +59,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 # Copy levels to build directory
 add_custom_target(copy_levels ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/levels
-    ${CMAKE_BINARY_DIR}/levels
+    ${CMAKE_SOURCE_DIR}/assets/levels
+    ${CMAKE_BINARY_DIR}/assets/levels
     COMMENT "Copying levels to build directory"
 )
 

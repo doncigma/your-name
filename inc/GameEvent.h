@@ -17,6 +17,6 @@ public:
     GameEvent(SDL_Event sdlEvent, GameEventType type) : sdlEvent(sdlEvent), type(type) {}
     ~GameEvent() {}
 
-    GameEventType type;
     SDL_Event sdlEvent;
+    GameEventType type;
 };

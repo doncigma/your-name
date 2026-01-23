@@ -1,0 +1,5 @@
+/home/kraken/coding-linx/your-name/CMakeFiles/YourName.dir
+/home/kraken/coding-linx/your-name/CMakeFiles/copy_levels.dir
+/home/kraken/coding-linx/your-name/CMakeFiles/copy_assets.dir
+/home/kraken/coding-linx/your-name/CMakeFiles/edit_cache.dir
+/home/kraken/coding-linx/your-name/CMakeFiles/rebuild_cache.dir

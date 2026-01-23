@@ -10,13 +10,6 @@
 class Game {
 public:
     Game() {
-    }
-    ~Game() {
-        quit();
-    }
-
-    // Global controls
-    void init() {
         // Rendering
         SDL_Init(SDL_INIT_VIDEO);
 
@@ -26,26 +19,29 @@ public:
             return;
         }
 
-        renderer = Renderer(window);
-        SDL_Rect view = renderer.getViewport();
+        renderer = new Renderer(window);
+        SDL_Rect view = renderer->getViewport();
         camera = {player.pos.x - view.w / 2, player.pos.y - view.h / 2, view.w, view.h};
         
         // Components
-        assetManager = AssetManager();
+        assetManager = new AssetManager(renderer);
         inputManager = InputManager();
         inputManager.setEventHandler([this](GameEvent event) {
             handleGameEvent(event);
         });
-        levelManager = LevelManager();
-        currentLevel = levelManager.getCurrentLevel();
+        levelManager = new LevelManager(assetManager);
+        currentLevel = levelManager->getCurrentLevel();
         player = Player();
-
 
         // State
         stateManager = StateManager();
         running = false;
     }
+    ~Game() {
+        quit();
+    }
 
+    // Main game loop
     void run() {
         running = true;
         lastFrameTime = SDL_GetTicks();
@@ -57,7 +53,7 @@ public:
             lastFrameTime = currentTime;
 
             // Process input
-            processInput();
+            processEvent();
 
             // Update states
             update(delta);
@@ -65,12 +61,8 @@ public:
             // Render updates
             render();
         }
-    }
 
-    void quit() {
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        window = nullptr;
+        quit();
     }
 
     // Event handling
@@ -89,20 +81,34 @@ public:
         }
     }
 
-private: 
-    // Rendering
-    Renderer renderer;
+private:
+    // Render members
     SDL_Window* window;
+    Renderer* renderer;
     SDL_Rect camera;
 
+    // Manager members
+    AssetManager* assetManager;
+    InputManager inputManager;
+    LevelManager* levelManager;
+    StateManager stateManager;
+    
+    // State members
+    const Level* currentLevel;
+    Player player;
+    bool running;
+    float delta;
+    Uint32 lastFrameTime;
+
+    // Rendering methods
     void resizeWindow(const SDL_WindowEvent& event) {
         SDL_SetWindowSize(window, event.data1, event.data2);
-        renderer.update();
+        renderer->update();
         resizeCamera();
     }
 
     void resizeCamera() {
-        SDL_Rect view = renderer.getViewport();
+        SDL_Rect view = renderer->getViewport();
         camera = {
             player.pos.x - view.w / 2,
             player.pos.y - view.h / 2,
@@ -112,27 +118,13 @@ private:
     }
 
     void render() {
-        
-
-        renderer.clear();
-        renderer.draw(tileset, camera);
-        renderer.present();
+        renderer->clear();
+        renderer->draw(currentLevel, camera);
+        renderer->present();
     }
 
-    // Game components
-    AssetManager assetManager;
-    InputManager inputManager;
-    LevelManager levelManager;
-    Player player;
-    Level currentLevel;
-
-    // State
-    StateManager stateManager;
-    bool running;
-    float delta;
-    Uint32 lastFrameTime;
-
-    void processInput() {
+    // State methods
+    void processEvent() {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             inputManager.handleEvent(event);
@@ -141,8 +133,22 @@ private:
     
     void update(float delta) {
         player.update(delta, &inputManager);
-        renderer.update();
+        renderer->update();
         resizeCamera();
-        currentLevel = levelManager.getCurrentLevel();
+        currentLevel = levelManager->getCurrentLevel();
+    }
+
+    // Global controls
+    void quit() {
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        window = nullptr;
+
+        delete renderer;
+        delete assetManager;
+        delete levelManager;
+        renderer = nullptr;
+        assetManager = nullptr;
+        levelManager = nullptr;
     }
 };
