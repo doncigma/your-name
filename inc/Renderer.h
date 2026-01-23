@@ -36,11 +36,6 @@ public:
         int startY = camera.y / tileHeight;
         int endX = (camera.x + camera.w) / tileWidth + 1;
         int endY = (camera.y + camera.h) / tileHeight + 1;
-        
-        // int startX = std::max(0, camera.x / tileWidth);
-        // int startY = std::max(0, camera.y / tileHeight);
-        // int endX = std::min((camera.x + camera.w) / tileWidth + 1, level->getTilesetCols());
-        // int endY = std::min((camera.y + camera.h) / tileHeight + 1, level->getTilesetRows());
 
         // Render only visible tiles
         for (int y = startY; y < endY; y++) {
@@ -64,7 +59,9 @@ public:
                     tileHeight
                 };
                 
-                SDL_RenderCopy(sdlRendrr, level->tileset, &src, &dst);
+                if (SDL_RenderCopy(sdlRendrr, level->tileset, &src, &dst) != 0) {
+                    Logger::logerr("Failed to render tile at (" + std::to_string(x) + ", " + std::to_string(y) + "): " + std::string(SDL_GetError()));
+                }
             }
         }
     }

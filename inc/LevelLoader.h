@@ -29,16 +29,15 @@ namespace LevelLoader {
         file.close();
         file2.close();
         
-        if (tilemapJson.contains("layers") && tilemapJson["layers"].empty()) {
+        if (!tilemapJson.contains("layers") || tilemapJson["layers"].empty()) {
             Logger::logerr("Level " + levelID + " is missing the tile layer!");
             return Level();
         }
-        if (tilesetJson.contains("tiles") && tilesetJson["tiles"].empty()) {
+        if (!tilesetJson.contains("tiles") || tilesetJson["tiles"].empty()) {
             Logger::logerr("Level " + levelID + " has an invalid tileset!");
             return Level();
         }
         // TODO: other validations
-        
         Level level;
         level.levelID = levelID;
         level.tileWidth = tilemapJson["tilewidth"].get<int>();

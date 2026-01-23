@@ -16,6 +16,7 @@ public:
         if (lvl.tiles.empty()) {
             Logger::logerr("LevelManager::LevelManager(): Failed to load level " + *currentLevelID);
         }
+        loadedLevels[*currentLevelID] = lvl;
     }
     ~LevelManager() {}
 
