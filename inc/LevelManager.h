@@ -11,8 +11,11 @@ class LevelManager {
 public:
     LevelManager(AssetManager* assetMgr) : assetManager(assetMgr) {
         currentLevelID = levelIDs.begin();
-        loadedLevels[*currentLevelID] = ld::loadLevel(*currentLevelID, assetManager); // current
-        // loadedLevels[*(currentLevelID + 1)] = ld::loadLevel(*(currentLevelID + 1), assetManager); // next
+
+        Level lvl = ld::loadLevel(*currentLevelID, assetManager);
+        if (lvl.tiles.empty()) {
+            Logger::logerr("LevelManager::LevelManager(): Failed to load level " + *currentLevelID);
+        }
     }
     ~LevelManager() {}
 
@@ -20,17 +23,17 @@ public:
 
     // TODO: finish level loading logic
     // Level loading
-    const Level* loadPreviousLevel() {
-        if (currentLevelID == levelIDs.begin() ||
-            loadedLevels.find(*currentLevelID) != loadedLevels.end()) {
-            return &loadedLevels[*currentLevelID];
-        }
-        else {
-            loadedLevels.erase(*(currentLevelID + 1));
-            currentLevelID--;
-            return &(loadedLevels[*currentLevelID] = ld::loadLevel(*currentLevelID, assetManager));
-        }
-    }
+    // const Level* loadPreviousLevel() {
+    //     if (currentLevelID == levelIDs.begin() ||
+    //         loadedLevels.find(*currentLevelID) != loadedLevels.end()) {
+    //         return &loadedLevels[*currentLevelID];
+    //     }
+    //     else {
+    //         loadedLevels.erase(*(currentLevelID + 1));
+    //         currentLevelID--;
+    //         return &(loadedLevels[*currentLevelID] = ld::loadLevel(*currentLevelID, assetManager));
+    //     }
+    // }
 
     const Level* loadNextLevel() {
         auto it = loadedLevels.find(*currentLevelID);
@@ -55,7 +58,6 @@ private:
     std::vector<std::string>::iterator currentLevelID;
     // TODO: standardize level IDs
     std::vector<std::string> levelIDs = {
-        "test", "castle-F1-R2", "castle-F1-R3",
-        "castle-F2-R1", "castle-F2-R2", "castle-F2-R3"
+        "test"
     };
 };

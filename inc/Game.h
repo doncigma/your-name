@@ -29,8 +29,15 @@ public:
         inputManager.setEventHandler([this](GameEvent event) {
             handleGameEvent(event);
         });
+
         levelManager = new LevelManager(assetManager);
         currentLevel = levelManager->getCurrentLevel();
+        if (!currentLevel) {
+            Logger::logerr("Game::Game(): Failed to get current level!");
+            quit();
+            return;
+        }
+
         player = Player();
 
         // State
