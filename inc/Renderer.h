@@ -23,30 +23,35 @@ public:
 
     // Rendering
     inline void clear() {
-        if (!(SDL_RenderClear(sdlRendrr)))
+        if (SDL_RenderClear(sdlRendrr) != 0)
             Logger::logerr("Failed to clear renderer: " + std::string(SDL_GetError()));
     }
 
     void draw(const Level* level, SDL_Rect& camera) {
         int tileWidth = level->getTileWidth();
         int tileHeight = level->getTileHeight();
-
+        
         // Calculate which tiles are visible
         int startX = camera.x / tileWidth;
         int startY = camera.y / tileHeight;
-        int endX = (camera.x + camera.w) / tileWidth + 1; // +1 to exclude end in the loop
+        int endX = (camera.x + camera.w) / tileWidth + 1;
         int endY = (camera.y + camera.h) / tileHeight + 1;
+        
+        // int startX = std::max(0, camera.x / tileWidth);
+        // int startY = std::max(0, camera.y / tileHeight);
+        // int endX = std::min((camera.x + camera.w) / tileWidth + 1, level->getTilesetCols());
+        // int endY = std::min((camera.y + camera.h) / tileHeight + 1, level->getTilesetRows());
 
         // Render only visible tiles
         for (int y = startY; y < endY; y++) {
             for (int x = startX; x < endX; x++) {
-                int tileID = level->getVisualTileAt(x, y);
-                if (tileID == static_cast<int>(TileSpriteID::EMPTY)) continue;
-
+                Tile tile = level->getTileAt(x, y);
+                if (tile.empty) continue;
+                
                 // Calculate source rect in tileset
                 SDL_Rect src = {
-                    (tileID % level->getTilesetCols()) * tileWidth,
-                    (tileID / level->getTilesetCols()) * tileHeight,
+                    (tile.id % level->getTilesetCols()) * tileWidth,
+                    (tile.id / level->getTilesetCols()) * tileHeight,
                     tileWidth,
                     tileHeight
                 };
@@ -63,7 +68,7 @@ public:
             }
         }
     }
-
+    
     inline void present() { SDL_RenderPresent(sdlRendrr); }
 
     // Render state

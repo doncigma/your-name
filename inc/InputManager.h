@@ -56,7 +56,7 @@ public:
 
             // Handle the action
             Actions action = it->second;
-            Logger::log("InputManager::handleEvent(): Action triggered: " + std::to_string(static_cast<int>(action))); // DEBUG
+            // Logger::log("InputManager::handleEvent(): Action triggered: " + std::to_string(static_cast<int>(action))); // DEBUG
             if (action == Actions::DEBUG_TOGGLE) {
                 toggleKeyHeld(action);
                 fireEvent(GameEvent(event, GameEventType::DEBUG_REQUESTED));

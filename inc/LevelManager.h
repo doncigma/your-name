@@ -37,9 +37,15 @@ public:
         if (currentLevelID == levelIDs.end() - 1 || it != loadedLevels.end()) 
             return &it->second;
         else {
+            Level lvl = ld::loadLevel(*currentLevelID, assetManager);
+            if (lvl.tiles.empty()) {
+                Logger::logerr("LevelManager::loadNextLevel(): Failed to load level " + *currentLevelID);
+                return nullptr;
+            }
             loadedLevels.erase(*(currentLevelID - 1));
+            loadedLevels[*currentLevelID] = lvl;
             currentLevelID++;
-            return &(loadedLevels[*currentLevelID] = ld::loadLevel(*currentLevelID, assetManager));
+            return &loadedLevels[*currentLevelID];
         }
     }
     
@@ -49,7 +55,7 @@ private:
     std::vector<std::string>::iterator currentLevelID;
     // TODO: standardize level IDs
     std::vector<std::string> levelIDs = {
-        "castle-F1-R1", "castle-F1-R2", "castle-F1-R3",
+        "test", "castle-F1-R2", "castle-F1-R3",
         "castle-F2-R1", "castle-F2-R2", "castle-F2-R3"
     };
 };
