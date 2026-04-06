@@ -1,5 +1,7 @@
 assets/
 build/
+CMakeFiles/
+.vscode/
 *.o
 *.d
 *.so
