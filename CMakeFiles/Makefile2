@@ -65,7 +65,6 @@ CMAKE_BINARY_DIR = /home/kraken/coding-linx/your-name
 # The main recursive "all" target.
 all: CMakeFiles/YourName.dir/all
 all: CMakeFiles/copy_levels.dir/all
-all: CMakeFiles/copy_assets.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -75,7 +74,6 @@ preinstall:
 # The main recursive "clean" target.
 clean: CMakeFiles/YourName.dir/clean
 clean: CMakeFiles/copy_levels.dir/clean
-clean: CMakeFiles/copy_assets.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -83,7 +81,6 @@ clean: CMakeFiles/copy_assets.dir/clean
 
 # All Build rule for target.
 CMakeFiles/YourName.dir/all: CMakeFiles/copy_levels.dir/all
-CMakeFiles/YourName.dir/all: CMakeFiles/copy_assets.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/YourName.dir/build.make CMakeFiles/YourName.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/YourName.dir/build.make CMakeFiles/YourName.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kraken/coding-linx/your-name/CMakeFiles --progress-num=1,2 "Built target YourName"
@@ -91,7 +88,7 @@ CMakeFiles/YourName.dir/all: CMakeFiles/copy_assets.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/YourName.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kraken/coding-linx/your-name/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kraken/coding-linx/your-name/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/YourName.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/kraken/coding-linx/your-name/CMakeFiles 0
 .PHONY : CMakeFiles/YourName.dir/rule
@@ -112,7 +109,7 @@ CMakeFiles/YourName.dir/clean:
 CMakeFiles/copy_levels.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_levels.dir/build.make CMakeFiles/copy_levels.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_levels.dir/build.make CMakeFiles/copy_levels.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kraken/coding-linx/your-name/CMakeFiles --progress-num=4 "Built target copy_levels"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kraken/coding-linx/your-name/CMakeFiles --progress-num=3 "Built target copy_levels"
 .PHONY : CMakeFiles/copy_levels.dir/all
 
 # Build rule for subdir invocation for target.
@@ -130,32 +127,6 @@ copy_levels: CMakeFiles/copy_levels.dir/rule
 CMakeFiles/copy_levels.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_levels.dir/build.make CMakeFiles/copy_levels.dir/clean
 .PHONY : CMakeFiles/copy_levels.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/copy_assets.dir
-
-# All Build rule for target.
-CMakeFiles/copy_assets.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_assets.dir/build.make CMakeFiles/copy_assets.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_assets.dir/build.make CMakeFiles/copy_assets.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kraken/coding-linx/your-name/CMakeFiles --progress-num=3 "Built target copy_assets"
-.PHONY : CMakeFiles/copy_assets.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/copy_assets.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kraken/coding-linx/your-name/CMakeFiles 1
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/copy_assets.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kraken/coding-linx/your-name/CMakeFiles 0
-.PHONY : CMakeFiles/copy_assets.dir/rule
-
-# Convenience name for target.
-copy_assets: CMakeFiles/copy_assets.dir/rule
-.PHONY : copy_assets
-
-# clean rule for target.
-CMakeFiles/copy_assets.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/copy_assets.dir/build.make CMakeFiles/copy_assets.dir/clean
-.PHONY : CMakeFiles/copy_assets.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

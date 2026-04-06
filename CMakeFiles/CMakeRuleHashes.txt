@@ -1,3 +1,2 @@
 # Hashes of file build rules.
-0b77a46371ee66b1144672e4f15d6046 CMakeFiles/copy_assets
 36d2bde00a4391db2ffda9bca158908a CMakeFiles/copy_levels
