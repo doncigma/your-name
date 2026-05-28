@@ -2,6 +2,7 @@ assets/
 build/
 CMakeFiles/
 .vscode/
+**/bin/
 *.o
 *.d
 *.so
