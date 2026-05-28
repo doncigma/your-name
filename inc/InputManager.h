@@ -19,7 +19,7 @@ class InputManager {
 public:
     InputManager() {};
     InputManager(std::function<void(GameEvent)> handler) : eventHandler(handler) {};
-    ~InputManager() { this->eventHandler = nullptr; };
+    ~InputManager() {};
 
     // Actions
     /// @brief Key mappings from `SDL_SCANCODES` to `Actions`
@@ -30,27 +30,89 @@ public:
         {SDL_SCANCODE_A, Actions::MOVE_LEFT},
         {SDL_SCANCODE_D, Actions::MOVE_RIGHT},
         {SDL_SCANCODE_SPACE, Actions::JUMP},
-        {SDL_SCANCODE_J, Actions::ATTACK}
+        {SDL_SCANCODE_K, Actions::ATTACK}
     };
 
     // Key state
-    bool isKeyHeld(Actions action) const;
+    inline bool isKeyHeld(Actions action) const {
+        auto it = heldKeys.find(action);
+        return (it == heldKeys.end() ? false : it->second);
+    }
     
     // Event handling
-    void handleEvent(SDL_Event& event);
-    inline void setEventHandler(std::function<void(GameEvent)> handler) { this->eventHandler = handler; }
+    void handleEvent(SDL_Event& event) {
+        auto type = event.type;
+        if (type == SDL_QUIT) {
+            // Handle quit event
+            heldKeys[Actions::QUIT] = true;
+            fireEvent(GameEvent(event, GameEventType::QUIT_REQUESTED));
+        }
+        else if (type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            fireEvent(GameEvent(event, GameEventType::WINDOW_RESIZED));
+        }
+        else if (type == SDL_KEYDOWN) {
+            auto it = mappings.find(event.key.keysym.scancode);
+            if (it == mappings.end()) return;
+
+            // Handle the action
+            Actions action = it->second;
+            // Logger::log("InputManager::handleEvent(): Action triggered: " + std::to_string(static_cast<int>(action))); // DEBUG
+            if (action == Actions::DEBUG_TOGGLE) {
+                toggleKeyHeld(action);
+                fireEvent(GameEvent(event, GameEventType::DEBUG_REQUESTED));
+            }
+            else if (action == Actions::QUIT) {
+                fireEvent(GameEvent(event, GameEventType::QUIT_REQUESTED));
+            }
+            else if (action == Actions::PAUSE) {
+                toggleKeyHeld(action);
+                fireEvent(GameEvent(event, GameEventType::PAUSE_REQUESTED));
+            }
+            else if (action == Actions::MOVE_LEFT) {
+                toggleKeyHeld(action);
+            }
+            else if (action == Actions::MOVE_RIGHT) {
+                toggleKeyHeld(action);
+            }
+            else if (action == Actions::JUMP) {
+                toggleKeyHeld(action);
+            }
+            else if (action == Actions::ATTACK) {
+                toggleKeyHeld(action);
+            }
+        }
+        else if (type == SDL_KEYUP) {
+            auto it = mappings.find(event.key.keysym.scancode);
+            if (it == mappings.end()) return;
+
+            // Handle the action
+            Actions action = it->second;
+            toggleKeyHeld(action);
+        }
+        else if (type == SDL_MOUSEBUTTONDOWN) {
+            Uint8 button = event.button.button;
+            if (button == SDL_BUTTON_LEFT) {
+                // fireEvent(GameEvent(event, GameEventType::ATTACK));
+            }
+            else if (button == SDL_BUTTON_RIGHT) {
+                // fireEvent(GameEvent(event, GameEventType::MOUSE_RIGHT_CLICK));
+            }
+        }
+    }
+
+    inline void setEventHandler(std::function<void(GameEvent)> handler) { eventHandler = handler; }
     
-    private:
+private:
     // Key state
     std::unordered_map<Actions, bool> heldKeys;
-    inline bool toggleKeyHeld(Actions action) { return (this->heldKeys[action] = !this->heldKeys[action]); }
-
-    // Event handling
     std::function<void(GameEvent)> eventHandler;
 
+    inline bool toggleKeyHeld(Actions action) { return (heldKeys[action] = !heldKeys[action]); }
+
+    // Event handling
     inline void fireEvent(GameEvent event) {
-        if (this->eventHandler)
-            this->eventHandler(event);
-        else Logger::logerr("InputManager::fire(): No event handler set");
+        eventHandler
+        ? eventHandler(event)
+        : Logger::logerr("InputManager::fire(): No event handler set");
     }
 };

@@ -1,8 +1,22 @@
 #pragma once
+#include <SDL2/SDL.h>
 
-enum class GameEvent {
-    DEBUG_REQUESTED,
+enum class GameEventType {
+    // Game controls
     QUIT_REQUESTED,
+    // Window
+    WINDOW_RESIZED,
+    // Menus
+    DEBUG_REQUESTED, // DEV
     PAUSE_REQUESTED,
-    RESUME_REQUESTED
+    RESUME_REQUESTED,
+};
+
+class GameEvent {
+public:
+    GameEvent(SDL_Event sdlEvent, GameEventType type) : sdlEvent(sdlEvent), type(type) {}
+    ~GameEvent() {}
+
+    SDL_Event sdlEvent;
+    GameEventType type;
 };
