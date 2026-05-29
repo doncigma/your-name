@@ -42,40 +42,61 @@ namespace LevelLoader {
         level.levelID = levelID;
         level.tileWidth = tilemapJson["tilewidth"].get<int>();
         level.tileHeight = tilemapJson["tileheight"].get<int>();
-        level.tilesetCols = tilemapJson["width"].get<int>();
+        level.mapWidth = tilemapJson["width"].get<int>();
+        level.mapHeight = tilemapJson["height"].get<int>();
+        level.tilesetCols = tilesetJson["columns"].get<int>();
         level.tilesetRows = tilemapJson["height"].get<int>();
         level.tileset = assetManager->loadTexture("assets/tilesets/" + levelID + ".png");
-        
-        std::vector<int> tmpIDs;
-        for (auto& layer : tilemapJson["layers"]) {
-            for (auto& id : layer["data"]) {
-                tmpIDs.push_back(id.get<int>());
-            }
-        }
-        
-        for (auto& tid : tmpIDs) {
-            for (auto& t : tilesetJson["tiles"]) {
-                auto id = t["id"].get<int>();
-                if (tid != id) continue;
-                
-                Tile tile; 
-                tile.id = id;
-                for (auto& prop : t["properties"]) {
-                    std::istringstream iss;
-                    if (prop["name"] == "empty") {
-                        // iss.str(prop["value"].get<std::string>());
-                        // iss >> std::boolalpha >> tile.empty;
-                        // iss.clear();
-                        tile.empty = prop["value"];
-                    }
-                    else if (prop["name"] == "collidable") {
-                        iss.str(prop["value"].get<std::string>());
-                        iss >> std::boolalpha >> tile.collidable;
-                        iss.clear();
-                    }
-                    // TODO: more props
+
+        // Build a lookup from tileset tile ID -> properties
+        std::unordered_map<int, Tile> tileProps;
+        for (auto& t : tilesetJson["tiles"]) {
+            if (!t.contains("properties")) continue;
+
+            int id = t["id"].get<int>();
+
+            Tile tile;
+            tile.id = id;
+            tile.empty = false;
+            tile.collidable = false;
+            for (auto& prop : t["properties"]) {
+                if (prop["name"] == "empty") {
+                    tile.empty = prop["value"].get<bool>();
                 }
-                level.tiles.push_back(tile);
+                else if (prop["name"] == "collidable") {
+                    tile.collidable = prop["value"].get<bool>();
+                }
+                // TODO: more props
+            }
+            tileProps[id] = tile;
+        }
+
+        // Pre-allocate tiles for the full map grid
+        int totalTiles = level.mapWidth * level.mapHeight;
+        level.tiles.resize(totalTiles, Tile{0, true, false});
+
+        // Tiled uses 1-based IDs in tilemap data (firstgid), 0 means empty
+        int firstgid = 1;
+        if (tilemapJson.contains("tilesets") && !tilemapJson["tilesets"].empty()) {
+            firstgid = tilemapJson["tilesets"][0]["firstgid"].get<int>();
+        }
+
+        // Fill tiles from tilemap layer data
+        for (auto& layer : tilemapJson["layers"]) {
+            auto& data = layer["data"];
+            for (int i = 0; i < totalTiles && i < static_cast<int>(data.size()); i++) {
+                int rawID = data[i].get<int>();
+                if (rawID == 0) continue; // Tiled empty cell, can maybe save in array for background cell calc
+
+                int tileID = rawID - firstgid;
+                auto it = tileProps.find(tileID);
+                if (it != tileProps.end()) {
+                    level.tiles[i] = it->second;
+                }
+                else {
+                    // Tile exists in map but has no properties defined
+                    level.tiles[i] = Tile{tileID, false, false};
+                }
             }
         }
 
