@@ -20,12 +20,9 @@ public:
         }
 
         renderer = new Renderer(window);
-        SDL_Rect view = renderer->getViewport();
-        camera = {player.pos.x - view.w / 2, player.pos.y - view.h / 2, view.w, view.h};
-        
+
         // Components
         assetManager = new AssetManager(renderer);
-        inputManager = InputManager();
         inputManager.setEventHandler([this](GameEvent event) {
             handleGameEvent(event);
         });
@@ -38,11 +35,9 @@ public:
             return;
         }
 
-        player = Player();
-
-        // State
-        stateManager = StateManager();
-        running = false;
+        // Camera centered on player
+        SDL_Rect view = renderer->getViewport();
+        camera = {player.pos.x - view.w / 2, player.pos.y - view.h / 2, view.w, view.h};
     }
     ~Game() {
         quit();
@@ -73,7 +68,7 @@ public:
     }
 
     // Event handling
-    void handleGameEvent(GameEvent& event) {
+    void handleGameEvent(const GameEvent& event) {
         if (event.type == GameEventType::QUIT_REQUESTED) {
             running = false;
         }
@@ -90,22 +85,22 @@ public:
 
 private:
     // Render members
-    SDL_Window* window;
-    Renderer* renderer;
-    SDL_Rect camera;
+    SDL_Window* window = nullptr;
+    Renderer* renderer = nullptr;
+    SDL_Rect camera = {0, 0, 0, 0};
 
     // Manager members
-    AssetManager* assetManager;
+    AssetManager* assetManager = nullptr;
     InputManager inputManager;
-    LevelManager* levelManager;
+    LevelManager* levelManager = nullptr;
     StateManager stateManager;
-    
+
     // State members
-    const Level* currentLevel;
+    const Level* currentLevel = nullptr;
     Player player;
-    bool running;
-    float delta;
-    Uint32 lastFrameTime;
+    bool running = false;
+    float delta = 0.0f;
+    Uint32 lastFrameTime = 0;
 
     // Rendering methods
     void resizeWindow(const SDL_WindowEvent& event) {
@@ -116,12 +111,30 @@ private:
 
     void resizeCamera() {
         SDL_Rect view = renderer->getViewport();
-        camera = {
-            player.pos.x - view.w / 2,
-            player.pos.y - view.h / 2,
-            view.w,
-            view.h
-        };
+        camera.w = view.w;
+        camera.h = view.h;
+        camera.x = player.pos.x - view.w / 2;
+        camera.y = player.pos.y - view.h / 2;
+
+        // Clamp to map bounds (center if map is smaller than viewport)
+        if (currentLevel) {
+            int mapPixelW = currentLevel->getMapWidth() * currentLevel->getTileWidth();
+            int mapPixelH = currentLevel->getMapHeight() * currentLevel->getTileHeight();
+
+            if (mapPixelW <= camera.w) {
+                camera.x = -(camera.w - mapPixelW) / 2;
+            } else {
+                if (camera.x < 0) camera.x = 0;
+                if (camera.x + camera.w > mapPixelW) camera.x = mapPixelW - camera.w;
+            }
+
+            if (mapPixelH <= camera.h) {
+                camera.y = -(camera.h - mapPixelH) / 2;
+            } else {
+                if (camera.y < 0) camera.y = 0;
+                if (camera.y + camera.h > mapPixelH) camera.y = mapPixelH - camera.h;
+            }
+        }
     }
 
     void render() {
@@ -147,15 +160,17 @@ private:
 
     // Global controls
     void quit() {
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        window = nullptr;
+        if (!window) return; // already cleaned up
 
-        delete renderer;
-        delete assetManager;
         delete levelManager;
-        renderer = nullptr;
-        assetManager = nullptr;
+        delete assetManager;
+        delete renderer;
         levelManager = nullptr;
+        assetManager = nullptr;
+        renderer = nullptr;
+
+        SDL_DestroyWindow(window);
+        window = nullptr;
+        SDL_Quit();
     }
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <SDL2/SDL.h>
 #include "Logger.h"
 #include "Level.h"
@@ -27,22 +28,25 @@ public:
             Logger::logerr("Failed to clear renderer: " + std::string(SDL_GetError()));
     }
 
-    void draw(const Level* level, SDL_Rect& camera) {
+    void draw(const Level* level, const SDL_Rect& camera) {
+        if (!level || !level->tileset) return;
+
         int tileWidth = level->getTileWidth();
         int tileHeight = level->getTileHeight();
-        
-        // Calculate which tiles are visible
-        int startX = camera.x / tileWidth;
-        int startY = camera.y / tileHeight;
-        int endX = (camera.x + camera.w) / tileWidth + 1;
-        int endY = (camera.y + camera.h) / tileHeight + 1;
+        if (tileWidth <= 0 || tileHeight <= 0) return;
+
+        // Calculate visible tile range, clamped to map bounds
+        int startX = std::max(0, camera.x / tileWidth);
+        int startY = std::max(0, camera.y / tileHeight);
+        int endX = std::min(level->getMapWidth(), (camera.x + camera.w) / tileWidth + 1);
+        int endY = std::min(level->getMapHeight(), (camera.y + camera.h) / tileHeight + 1);
 
         // Render only visible tiles
         for (int y = startY; y < endY; y++) {
             for (int x = startX; x < endX; x++) {
                 Tile tile = level->getTileAt(x, y);
                 if (tile.empty) continue;
-                
+
                 // Calculate source rect in tileset
                 SDL_Rect src = {
                     (tile.id % level->getTilesetCols()) * tileWidth,
@@ -50,7 +54,7 @@ public:
                     tileWidth,
                     tileHeight
                 };
-                
+
                 // Calculate destination on screen
                 SDL_Rect dst = {
                     x * tileWidth - camera.x,
@@ -58,7 +62,7 @@ public:
                     tileWidth,
                     tileHeight
                 };
-                
+
                 if (SDL_RenderCopy(sdlRendrr, level->tileset, &src, &dst) != 0) {
                     Logger::logerr("Failed to render tile at (" + std::to_string(x) + ", " + std::to_string(y) + "): " + std::string(SDL_GetError()));
                 }
