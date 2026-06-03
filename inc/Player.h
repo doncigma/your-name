@@ -30,5 +30,12 @@ public:
         if (inputManager->isKeyHeld(Actions::ATTACK)) {
             // Attack
         }
+
+        // TODO: Migrate input manager to player and use keyboard state
+        // const Uint8* state = SDL_GetKeyboardState(NULL);
+
+        // if (state[SDL_SCANCODE_A]) {
+        //     pos.x -= static_cast<int>(200 * delta); // consolidate into speed var
+        // }
     }
 };
