@@ -116,6 +116,7 @@ private:
         camera.x = player.pos.x - view.w / 2;
         camera.y = player.pos.y - view.h / 2;
 
+        // Uint32 lastPrint = 0; // dbgging
         // Clamp to map bounds (center if map is smaller than viewport)
         if (currentLevel) {
             int mapPixelW = currentLevel->getMapWidth() * currentLevel->getTileWidth();
@@ -135,6 +136,13 @@ private:
                 if (camera.y + camera.h > mapPixelH) camera.y = mapPixelH - camera.h;
             }
         }
+
+        // debugging
+        // Uint32 now = SDL_GetTicks();
+        // if (now - lastPrint >= 1000) {
+        //     printf("Camera x:%d y:%d\n", camera.x, camera.y);
+        //     lastPrint = now;
+        // }
     }
 
     void render() {
@@ -155,7 +163,7 @@ private:
         player.update(delta, &inputManager);
         renderer->update();
         resizeCamera();
-        currentLevel = levelManager->getCurrentLevel();
+        // currentLevel = levelManager->getCurrentLevel();
     }
 
     // Global controls
